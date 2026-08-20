@@ -1,22 +1,12 @@
 import pika
-import redis
 import json
 import time
 
-
-# =====================================
-# REDIS
-# =====================================
-
-r = redis.Redis(
-    host="localhost",
-    port=6379,
-    decode_responses=True
-)
+from backend.app.services.memory import save_vehicle_memory
 
 
 # =====================================
-# RABBITMQ
+# RABBITMQ CONNECTION
 # =====================================
 
 connection = pika.BlockingConnection(
@@ -127,22 +117,25 @@ while len(received) < 2:
         print("\n📥 Received from Vehicle B:")
         print(data)
 
-        # Save to Redis
-        hazard = data["hazard"]
 
-        key = "vehicle:A:memory:" + hazard
+        # =====================================
+        # SAVE RECEIVED EVENT TO REDIS
+        # =====================================
 
-        r.hset(
-            key,
-            mapping={
-                "source_vehicle": data["vehicle_id"],
-                "hazard": data["hazard"],
-                "confidence": str(data["confidence"]),
-                "recommendation": data["recommendation"]
-            }
+        save_vehicle_memory(
+            vehicle_id="A",
+            source_vehicle=data["vehicle_id"],
+            hazard=data["hazard"],
+            confidence=data["confidence"],
+            recommendation=data["recommendation"]
         )
 
-        r.expire(key, 30)
+        print("🧠 Saved to Vehicle A Redis memory.")
+
+
+        # =====================================
+        # ACKNOWLEDGE MESSAGE
+        # =====================================
 
         channel.basic_ack(
             delivery_tag=method.delivery_tag
@@ -153,7 +146,10 @@ while len(received) < 2:
         time.sleep(0.5)
 
 
-    # Safety timeout
+    # =====================================
+    # SAFETY TIMEOUT
+    # =====================================
+
     if time.time() - start_time > 30:
 
         print("\n⚠️ Timeout waiting for Vehicle B.")
