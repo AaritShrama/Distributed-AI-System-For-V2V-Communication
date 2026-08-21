@@ -3,8 +3,6 @@ import json
 import time
 
 from backend.app.services.memory import save_vehicle_memory
-
-
 # =====================================
 # RABBITMQ
 # =====================================
@@ -119,6 +117,7 @@ while len(received) < 2:
 
 
         # =================================
+
         # SAVE TO REDIS THROUGH BACKEND
         # =================================
 

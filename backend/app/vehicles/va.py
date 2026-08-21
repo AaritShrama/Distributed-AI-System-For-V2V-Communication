@@ -117,6 +117,7 @@ while len(received) < 2:
         print("\n📥 Received from Vehicle B:")
         print(data)
 
+=======
 
         # =====================================
         # SAVE RECEIVED EVENT TO REDIS
@@ -146,10 +147,11 @@ while len(received) < 2:
         time.sleep(0.5)
 
 
+
+=======
     # =====================================
     # SAFETY TIMEOUT
     # =====================================
-
     if time.time() - start_time > 30:
 
         print("\n⚠️ Timeout waiting for Vehicle B.")

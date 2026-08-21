@@ -1,4 +1,9 @@
 .venv/
+<<<<<<< HEAD
+venv/
+__pycache__
+=======
 __pycache__/
 *.pyc
+>>>>>>> 2372f348dfc9a8d503ad80bcf9bceccf2a823e2b
 .env
