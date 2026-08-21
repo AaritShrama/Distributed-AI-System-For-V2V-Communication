@@ -1,20 +1,8 @@
 import pika
-import redis
 import json
 import time
 
-
-# =====================================
-# REDIS
-# =====================================
-
-r = redis.Redis(
-    host="localhost",
-    port=6379,
-    decode_responses=True
-)
-
-
+from backend.app.services.memory import save_vehicle_memory
 # =====================================
 # RABBITMQ
 # =====================================
@@ -129,24 +117,17 @@ while len(received) < 2:
 
 
         # =================================
-        # SAVE TO REDIS
+
+        # SAVE TO REDIS THROUGH BACKEND
         # =================================
 
-        hazard = data["hazard"]
-
-        key = "vehicle:B:memory:" + hazard
-
-        r.hset(
-            key,
-            mapping={
-                "source_vehicle": data["vehicle_id"],
-                "hazard": data["hazard"],
-                "confidence": str(data["confidence"]),
-                "recommendation": data["recommendation"]
-            }
+        save_vehicle_memory(
+            vehicle_id="B",
+            source_vehicle=data["vehicle_id"],
+            hazard=data["hazard"],
+            confidence=data["confidence"],
+            recommendation=data["recommendation"]
         )
-
-        r.expire(key, 30)
 
 
         channel.basic_ack(
